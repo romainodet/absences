@@ -1,10 +1,15 @@
 import datetime
+import csv
 
-LOG_FILE = "radius.log"
-LOGIN_FILE = "login_1a_2015"
+ofile = open('stats.csv', "w")
+writer = csv.writer(ofile, delimiter=',', quotechar=' ', quoting=csv.QUOTE_ALL)
+writer.writerow(['Login', 'abs'])
 
-presence = {}
-statistics = {}
+LOG_FILE = "radius.log"  # file of the logs
+LOGIN_FILE = "login_1a_2015"  # all the login of the Students
+
+presence = {}  # init the dictionary of the person which are present
+statistics = {}  # init rhe dictionnary of the persons which are absents
 
 
 for login in open(LOGIN_FILE, "r"):
@@ -36,3 +41,6 @@ for day in presence:
 
 for login in sorted(statistics):
     print("%s => %d" % (login, statistics[login]))
+    writer.writerow((login, statistics[login]))
+
+ofile.close()
