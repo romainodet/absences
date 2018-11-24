@@ -2,9 +2,22 @@ import datetime
 import csv
 
 
+# Function permit to clear the screen with the number of line which are indicate in the attribute
+def blank(lignes):
+    for i in range(lignes):
+        print("")
+    return 0
+
+
+# Function reproduce the pause() function in C
+def pause(message):
+    input(message)
+    return 0
+
+
 def read_abs(LOG_FILE, LOGIN_FILE):
     presence = {}  # init the dictionary of the person which are present
-    statistics = {}  # init rhe dictionnary of the persons which are absents
+    statistics = {}  # init the dictionnary of the persons which are absents
     connexion = {}
 
     try:
@@ -15,6 +28,7 @@ def read_abs(LOG_FILE, LOGIN_FILE):
 
     for login in open(LOGIN_FILE, "r"):
         statistics[login.strip()] = 0
+
     boucle = 0
     for line in open(LOG_FILE):
         if 'Auth: Login OK:' in line:
@@ -31,7 +45,6 @@ def read_abs(LOG_FILE, LOGIN_FILE):
                 presence[day] = []
 
             login = line[line.find("[") + 1:line.find("]")]
-            login_complet = login.replace(".", " ").title()
             if login not in presence[day] and login in statistics:
                 presence[day].append(login)
 
@@ -50,13 +63,17 @@ def read_abs(LOG_FILE, LOGIN_FILE):
             if student not in presence[day]:
                 print('Student %s was absent on %s' % (student, day))
                 statistics[student] += 1
+
+    pause("Please press a button to continue")
+
     with open('stats.csv', 'w', newline='') as outfile:
         writer = csv.writer(outfile)
         writer.writerow(['Login', 'Name', 'Number of non-attendance', 'Number of connexion'])
         for login in sorted(statistics):
             print("%s => %d" % (login, statistics[login]))
             writer.writerow((login, login.replace(".", " ").title(), statistics[login], connexion[login]))
-
+    pause("Please press a button to finish")
+    blank(30)
 
 def decoder_csv(file):
     f = open(file, 'r')
@@ -66,8 +83,18 @@ def decoder_csv(file):
     for row in reader:
         print('The student', row[0], 'was absent', row[1], 'time(s)')
     f.close()
+    pause("")
+    blank(30)
 
 
+def add_login(LOGIN_FILE):
+    login = input("Please enter the login to add : ")
+    with open(LOGIN_FILE, "a") as f:
+        f.write("\n")
+        f.write(login)
+    print("Login", login, "for", login.replace(".", " ").title(), "is succesfully added")
+    pause("")
+    blank(30)
 while True:
     print('''
      _      _  _____ _    ____  _____ ____  ____  ____  _____ ____ 
@@ -78,9 +105,10 @@ while True:
 
     Welcome in the wifi decoder/encoder :
 
-    2 modes are available :
+    3 modes are available :
      TYPE 1 FOR THE DECODER
      TYPE 2 FOR THE ENCODER
+     TYPE 3 ADD A LOGIN TO THE LOG FILE
 
     If you want to exit type 0
 
@@ -96,11 +124,16 @@ while True:
         file = input('Please enter the name of the csv file to decode : ')
         decoder_csv(file)
     elif mode == 2:
-        # try
-        LOG_FILE = "radius.log"  # file of the logs
+        try:
+            LOG_FILE = "radius.log"  # file of the logs
+            LOGIN_FILE = "login_1a_2015"  # all the login of the Students
+            read_abs(LOG_FILE, LOGIN_FILE)
+        except:
+            print('An error occured while reading file')
+    elif mode == 3:
         LOGIN_FILE = "login_1a_2015"  # all the login of the Students
-        read_abs(LOG_FILE, LOGIN_FILE)
-        # except:
-        # print('An error occured')
+        add_login(LOGIN_FILE)
     elif mode == 0:
         exit('You ask to interrupt the program. GoodBye')
+    else:
+        print('An error occured')
