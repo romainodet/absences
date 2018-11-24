@@ -5,16 +5,17 @@ import csv
 def read_abs(LOG_FILE, LOGIN_FILE):
     presence = {}  # init the dictionary of the person which are present
     statistics = {}  # init rhe dictionnary of the persons which are absents
+    connexion = {}
 
     try:
         open(LOGIN_FILE, "r")
         open(LOG_FILE, 'r')
     except:
-        exit('One of the files doesn\'t exist')
+        exit('One of those files doesn\'t exist')
 
     for login in open(LOGIN_FILE, "r"):
         statistics[login.strip()] = 0
-
+    boucle = 0
     for line in open(LOG_FILE):
         if 'Auth: Login OK:' in line:
             res = line.split(' : ')
@@ -22,15 +23,27 @@ def read_abs(LOG_FILE, LOGIN_FILE):
             dat = datetime.datetime.strptime(res[0], "%a %b %d %H:%M:%S %Y")
             day = dat.strftime("%d-%m-%Y")
             # Students are not supposed to be at school on week ends !
-            if dat.strftime('%a') == "Sat" or dat.strftime('%a') == "Sun":
+            if dat.strftime('%a') == "Sat" or dat.strftime('%a') == "Sun" or (
+                    dat.strftime('%d') == "11" and dat.strftime('%m') == "11"):
                 continue
 
             if day not in presence:
                 presence[day] = []
 
             login = line[line.find("[") + 1:line.find("]")]
+            login_complet = login.replace(".", " ").title()
             if login not in presence[day] and login in statistics:
                 presence[day].append(login)
+
+            if boucle == 0:
+                for login in statistics:
+                    connexion[login] = 0
+                boucle = 1
+            if login in presence[day] and login in statistics:
+                connexion[login] += 1
+
+    for login in statistics:
+        connexion[login] = round(connexion[login] / 2)
 
     for day in presence:
         for student in statistics:
@@ -39,10 +52,10 @@ def read_abs(LOG_FILE, LOGIN_FILE):
                 statistics[student] += 1
     with open('stats.csv', 'w', newline='') as outfile:
         writer = csv.writer(outfile)
-        writer.writerow(['Login', 'Number of non-attendance'])
+        writer.writerow(['Login', 'Name', 'Number of non-attendance', 'Number of connexion'])
         for login in sorted(statistics):
             print("%s => %d" % (login, statistics[login]))
-            writer.writerow((login, statistics[login]))
+            writer.writerow((login, login.replace(".", " ").title(), statistics[login], connexion[login]))
 
 
 def decoder_csv(file):
