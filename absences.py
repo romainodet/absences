@@ -109,6 +109,7 @@ while True:
      TYPE 1 FOR THE DECODER
      TYPE 2 FOR THE ENCODER
      TYPE 3 ADD A LOGIN TO THE LOG FILE
+     TYPE 4 TO VIEW THE LOGIN FILE
 
     If you want to exit type 0
 
@@ -133,6 +134,17 @@ while True:
     elif mode == 3:
         LOGIN_FILE = "login_1a_2015"  # all the login of the Students
         add_login(LOGIN_FILE)
+    elif mode == 4:
+        try:
+            LOGIN_FILE = "login_1a_2015"
+            f = open(LOGIN_FILE)
+            for line in f:
+                print(line)
+            f.close()
+        except:
+            print("Error while loading the file")
+        pause("Press any key")
+        blank(30)
     elif mode == 0:
         exit('You ask to interrupt the program. GoodBye')
     else:
