@@ -1,7 +1,6 @@
 import datetime
 import csv
 
-
 # Function permit to clear the screen with the number of line which are indicate in the attribute
 def blank(lignes):
     for i in range(lignes):
@@ -79,14 +78,17 @@ def read_abs(LOG_FILE, LOGIN_FILE):  # function to read a log file
 
 
 def decoder_csv(file):  # function to decode the csv file
-    f = open(file, 'r')  # only open the file
+    try:
+        f = open(file, 'r')  # only open the file
 
-    reader = csv.reader(f)  # open the file as a CSV
-    next(reader)  # pass the header
-    for row in reader:  # for each row of the file ...
-        print('The login', row[0], 'for the student', row[0].replace(".", " ").title(), 'was absent', row[1],
-              'time(s)')  # print the login and the number of time he/she was absent
-    f.close()  # close the file
+        reader = csv.reader(f)  # open the file as a CSV
+        next(reader)  # pass the header
+        for row in reader:  # for each row of the file ...
+            print('The login', row[0], 'for the student', row[0].replace(".", " ").title(), 'was absent', row[2],
+                  'time(s)')  # print the login and the number of time he/she was absent
+        f.close()  # close the file
+    except:
+        print("Error while loading the file...")
     pause("")  # pause
     blank(30)  # clean the screen
 

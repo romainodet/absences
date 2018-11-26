@@ -21,8 +21,3 @@ Difficulté : BLEU
 - [x] Filtrer les absences dûes au 11.11
 - [x] Ajouter des personnes au fichier des logins
 - [x] Afficher le fichier des logins
-
-
-
-
-
